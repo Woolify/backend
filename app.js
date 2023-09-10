@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import bodyParser from "body-parser";
 import cors from "cors";
-import flash from "connect-flash";
+import flash from "express-flash";
 import path from "path";
 import { fileURLToPath } from "url";
 import methodOverride from "method-override";
@@ -30,6 +30,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(cookieParser());
+app.use(flash());
 app.use(
   session({
     saveUninitialized: false,
@@ -70,88 +71,28 @@ app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(function (req, res, next) {
   res.locals.currentUser = req.user || null;
-  res.locals.brandName = req.user
-    ? req.user.role === "creator"
-      ? req.user.brandName
-      : req.user.createdBy.brandName
+  res.locals.username = req.user
+    ? req.user.role === "vendor"
+      ? req.user.username
+      : req.user.createdBy.username
     : null;
   res.locals.error = req.flash("error");
   res.locals.success = req.flash("success");
   next();
 });
 
-// Creator route imports
-import creatorPrimaryRoutes from "./routes/creator/primaryRoute.js";
-import creatorCourseRoutes from "./routes/creator/courseRoute.js";
-import creatorAuthRoutes from "./routes/creator/authRoutes.js";
-import creatorCourseBundleRoutes from "./routes/creator/courseBundleRoutes.js";
-import creatorProductRoutes from "./routes/creator/productRoutes.js";
-import creatorDiplomaRoutes from "./routes/creator/diplomaRoutes.js";
-import creatorQuizRoutes from "./routes/creator/quizRoute.js";
-import creatorCouponRoutes from "./routes/creator/couponRoute.js";
-import creatorInstructorRoutes from "./routes/creator/instructorRoutes.js";
-import creatorSubCreatorRoutes from "./routes/creator/subCreatorRoute.js";
-import creatorAnnouncementRoutes from "./routes/creator/announcementRoute.js";
-import creatorBannerRoutes from "./routes/creator/bannerRoute.js";
-import creatorContactRoutes from "./routes/creator/contactRoute.js";
-import creatorTestimonialRoutes from "./routes/creator/testimonialRoute.js";
-import creatorFeedbackVideosRoutes from "./routes/creator/feedbackVideoRoute.js";
-import creatorNewsLetterRoutes from "./routes/creator/newsLetterRoute.js";
-import creatorHelpRoutes from "./routes/creator/helpRoute.js";
-import creatorFaqRoutes from "./routes/creator/faqRoute.js";
-import creatorBlogRoutes from "./routes/creator/blogRoutes.js";
-import creatorSettingRoutes from "./routes/creator/settingRoute.js";
-import creatorLearnerRoutes from "./routes/creator/learnerRoute.js";
+// User route imports
+import userAuthRoutes from "./routes/user/authRoute.js";
 
-// Learner Route Import
-import learnerPrimaryRoute from "./routes/learner/primaryRoutes.js";
-import learnerAuthRoute from "./routes/learner/authRoutes.js";
-import learnerCourseRoutes from "./routes/learner/courseRoutes.js";
-import learnerBlogRoutes from "./routes/learner/blogRotes.js";
-import learnerBundleRoutes from "./routes/learner/bundleRoutes.js";
-import learnerProductRoutes from "./routes/learner/productRoutes.js";
-import learnerHelpRoutes from "./routes/learner/helpRoutes.js";
-import learnerInventoryRoutes from "./routes/learner/inventoryRoutes.js";
-
-// Creators Routes
-app.use("/api/creator/auth", creatorAuthRoutes);
-app.use("/api/creator", creatorPrimaryRoutes);
-app.use("/api/creator/course", creatorCourseRoutes);
-app.use("/api/creator/course-bundle", creatorCourseBundleRoutes);
-app.use("/api/creator/product", creatorProductRoutes);
-app.use("/api/creator/diploma", creatorDiplomaRoutes);
-app.use("/api/creator/quiz", creatorQuizRoutes);
-app.use("/api/creator/coupon", creatorCouponRoutes);
-app.use("/api/creator/instructor", creatorInstructorRoutes);
-app.use("/api/creator/sub-creator", creatorSubCreatorRoutes);
-app.use("/api/creator/announcement", creatorAnnouncementRoutes);
-app.use("/api/creator/banner", creatorBannerRoutes);
-app.use("/api/creator/contact", creatorContactRoutes);
-app.use("/api/creator/testimonial", creatorTestimonialRoutes);
-app.use("/api/creator/feedback", creatorFeedbackVideosRoutes);
-app.use("/api/creator/newsletter", creatorNewsLetterRoutes);
-app.use("/api/creator/help", creatorHelpRoutes);
-app.use("/api/creator/faq", creatorFaqRoutes);
-app.use("/api/creator/blog", creatorBlogRoutes);
-app.use("/api/creator/setting", creatorSettingRoutes);
-app.use("/api/creator/learner", creatorLearnerRoutes);
-
-// Learners Routes
-app.use("/api", learnerPrimaryRoute);
-app.use("/api/auth", learnerAuthRoute);
-app.use("/api/course", learnerCourseRoutes);
-app.use("/api/blog", learnerBlogRoutes);
-app.use("/api/course-bundle", learnerBundleRoutes);
-app.use("/api/product", learnerProductRoutes);
-app.use("/api/help", learnerHelpRoutes);
-app.use("/api/inventory", learnerInventoryRoutes);
+// User Routes
+app.use("/api/user/auth", userAuthRoutes);
 
 app.get("*", (req, res) => {
   const responseType = req.accepts(["html", "json"]);
 
   if (responseType === "html") {
     console.log(req.url, ": not found request"); //remove this console
-    res.render(__dirname + "/views/creator/auth/page-not-found");
+    res.render(__dirname + "/views/common/page-not-found");
   } else if (responseType === "json") {
     res.status(500).json({
       success: false,
