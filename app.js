@@ -87,6 +87,10 @@ import userAuthRoutes from "./routes/user/authRoute.js";
 // User Routes
 app.use("/api/user/auth", userAuthRoutes);
 
+app.get("/test", (req,res)=>{
+  res.status(200).send("Server is up & running...")
+})
+
 app.get("*", (req, res) => {
   const responseType = req.accepts(["html", "json"]);
 
