@@ -1,12 +1,12 @@
+import crypto from "crypto";
+import slugify from "slugify";
 import ErrorHandler from "../../utils/ErrorHandler.js";
 import { catchAsyncError } from "../../middleWares/catchAsyncError.js";
 import { User } from "../../models/User.js";
-import slugify from "slugify";
-// import { sendResponse } from "../../utils/sendResponse.js";
 import { sendToken } from "../../utils/sendToken.js";
+import { generateOTP, sendCustomSMS } from '../../utils/sendSms.js';
+// import { sendResponse } from "../../utils/sendResponse.js";
 // import { sendEmail } from "../../utils/sendEmail.js";
-import crypto from "crypto";
-
 
 //login
 export const loginUser = catchAsyncError(async (req, res, next) => {
@@ -89,6 +89,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
   res.redirect("/api/user/auth/login");
 });
 
+// forget pass
 export const userForgotPassword = catchAsyncError(async (req, res, next) => {
   const { email } = req.body;
 
@@ -189,3 +190,36 @@ export const userChangePassword = catchAsyncError(async (req, res, next) => {
   req.flash("success", "Password updated successfully.");
   res.redirect("/api/user/profile");
 });
+
+export const sendOtp = catchAsyncError(async (req,res,next) => {
+  const {phone} = req.body;
+  
+  const otp = generateOTP();
+
+  const message = `Your OTP for Woolify registration is: ${otp}`;
+  const smsSent = await sendCustomSMS(phone, message);
+
+  if (smsSent) {
+    const user = await User.findOneAndUpdate({ phone }, { otp }, { new: true });
+
+    res.status(200).json({ message: 'OTP sent successfully' });
+  } else {
+    res.status(500).json({ message: 'Failed to send OTP' });
+  }
+})
+
+export const verifyOtp = catchAsyncError(async (req, res,next) => {
+  const { phone, otp } = req.body;
+
+  const user = await User.findOne({ phone, otp });
+
+  if (user) {
+    user.otp = '';
+    user.isVerified=true;
+    await user.save();
+
+    res.status(200).json({ message: 'OTP verified successfully' });
+  } else {
+    res.status(400).json({ message: 'Invalid OTP' });
+  }
+})
