@@ -31,7 +31,7 @@ const schema = new mongoose.Schema(
       unique: [true, "Please use official email address."],
     },
     phone: {
-      type: Number,
+      type: String,
       required: [true, "Please enter your phone number."],
       unique:[true, "Please enter valid phone number"],
       minLength: [10, "Please enter valid phone number."],
@@ -58,8 +58,16 @@ const schema = new mongoose.Schema(
     },    
     role: {
       type: String,
-      enum: ["farmer", "vendor","processor","user","artisan","transporter","consultant","service-provider","buyer","admin"],
+      enum: ["farmer", "vendor","user","artisan","transporter","consultant","service-provider","buyer","admin"],
       default: "farmer",
+    },
+    otp:{
+      type:String,
+      default:"",
+    },
+    isVerified:{
+      type:Boolean,
+      default:false,
     },
     // createdBy: {
     //   type: Schema.Types.ObjectId,
