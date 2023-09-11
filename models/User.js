@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import jwt from "jsonwebtoken";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -90,15 +91,19 @@ const schema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
 schema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 schema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+schema.methods.getJWTToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
 };
 
 schema.methods.getResetToken = async function () {
@@ -111,6 +116,6 @@ schema.methods.getResetToken = async function () {
 
   this.resetPasswordExpire = Date.now() + 50 * 60 * 1000;
   return resetToken;
-};
+};;
 
-export const Creator = mongoose.model("user",schema); 
+export const User = mongoose.model("user",schema); 
