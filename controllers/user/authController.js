@@ -1,16 +1,51 @@
 import ErrorHandler from "../../utils/ErrorHandler.js";
 import { catchAsyncError } from "../../middleWares/catchAsyncError.js";
-import { Creator } from "../../models/User.js";
+import { User } from "../../models/User.js";
 import slugify from "slugify";
-import { sendResponse } from "../../utils/sendResponse.js";
+// import { sendResponse } from "../../utils/sendResponse.js";
+import { sendToken } from "../../utils/sendToken.js";
 // import { sendEmail } from "../../utils/sendEmail.js";
 import crypto from "crypto";
 
+
+//login
+export const loginUser = catchAsyncError(async (req, res, next) => {
+  const { username, password, role } = req.body;
+
+  const user = await User.findOne({
+    $or: [{ username: username }, { email: username }],
+    deleted: false,
+    status: true,
+  }).select("+password");
+
+  if (!user) {
+    return next(
+      new ErrorHandler("Account with this credentials doesn't exist.", 401)
+    );
+  }
+
+  if (user.status === false) {
+    return next(
+      new ErrorHandler(
+        "Your account is deactivate. Please contact admin to retrieve your account.",
+        403
+      )
+    );
+  }
+
+  let isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    return next(new ErrorHandler("Invalid login credentials", 401));
+  }
+
+  sendToken(user, 200, res);
+});
+
+// register
 export const registerUser = catchAsyncError(async (req, res, next) => {
   const {
     firstName,
     lastName,
-    token,
     role,
     username,
     password,
@@ -21,7 +56,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
 
   let user = await User.findOne({ username });
   if (user) {
-    return next(new ErrorHandler("Email already registered.", 409));
+    return next(new ErrorHandler("Account already exist.", 409));
   }
   if (phone.length < 10) {
     return next(new ErrorHandler("Please enter valid phone number.", 422));
@@ -35,7 +70,6 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
   let _user = {
     firstName,
     lastName,
-    token,
     username,
     password,
     phone,
