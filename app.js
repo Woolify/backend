@@ -30,7 +30,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(cookieParser());
-app.use(flash());
+// app.use(flash());
 app.use(
   session({
     saveUninitialized: false,
