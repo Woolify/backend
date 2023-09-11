@@ -50,7 +50,7 @@ const ErrorMiddleware = (err, req, res, next) => {
   }
 
   if (responseType === "html") {
-    req.flash("error", err.message);
+    // req.flash("error", err.message);
     res.redirect("back");
   } else if (responseType === "json") {
     res.status(err.statusCode).json({
