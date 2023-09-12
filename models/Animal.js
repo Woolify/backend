@@ -5,13 +5,14 @@ const schema = new mongoose.Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "farmer",
-      required: true,
+      // required: true,
     },
     nickName: {
       type: String,    
     },
     slug: {
-      type: String,    
+      type: String,   
+      // required:true 
     },
     qrImg:{
       type:String,
@@ -24,12 +25,12 @@ const schema = new mongoose.Schema(
     },
     type:{
       type: String,
-      enum: [ "sheep","goat","yak","rabbit"],
+      enum: [ "sheep","goat","yak","camel","rabbit"],
       default:"sheep",
     },
     breed:{ 
       type: String,
-      enum: ["nali","deccani","bannur","malpura","gaddi","garole","muzzaffarnagari","mecheri","jaisalmeri","chokla"],
+      // enum: ["nali","deccani","bannur","malpura","gaddi","garole","muzzaffarnagari","mecheri","jaisalmeri","chokla"],
     },    
     descp: {
       type: String,
@@ -46,4 +47,4 @@ const schema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Sheep = mongoose.model("sheep", schema ) 
+export const Animal = mongoose.model("animal", schema ) 
