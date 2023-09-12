@@ -229,6 +229,8 @@ export const checkUsername = catchAsyncError(async(req, res, next) => {
   const user = await User.findOne({username});
 
   if (user) {
-    return res.status()
+    return res.status(200).json({message:"Username already exist!"});
+  } else {
+    return res.status(404).json({message:"Username does not exist"});
   }
 })

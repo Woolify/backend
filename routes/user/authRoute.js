@@ -7,6 +7,7 @@ import {
   userChangePassword,
   sendOtp,
   verifyOtp,
+  checkUsername,
 } from "../../controllers/user/authController.js";
 import { extractUserInfo } from "../../middleWares/accessAuth.js";
 
@@ -39,5 +40,9 @@ router
 router
   .route("/verify-otp")
   .post(verifyOtp);
+
+router
+  .route("/check-username")
+  .post(checkUsername);
 
 export default router;
