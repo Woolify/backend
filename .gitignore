@@ -5,3 +5,5 @@ npm-debug.log
 /config/config.env
 .DS_Store
 /logs
+# public/uploads/animals/qr
+# public/uploads/users/profile
