@@ -30,9 +30,11 @@
     "morgan": "^1.10.0",
     "passport": "^0.6.0",
     "path": "^0.12.7",
+    "qrcode": "^1.5.3",
     "rotating-file-stream": "^3.1.1",
     "slugify": "^1.6.6",
     "twilio": "^4.17.0",
+    "uuid": "^9.0.0",
     "validator": "^13.11.0"
   },
   "devDependencies": {
