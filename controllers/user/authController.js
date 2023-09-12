@@ -74,7 +74,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
     password,
     phone,
     password,
-    slug: slugify(username, { lower: true }),
+    slug: slugify(`${firstName} ${lastName} ${username}`, { lower: true }),
     role,
   };
 
