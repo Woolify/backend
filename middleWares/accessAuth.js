@@ -2,12 +2,34 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 
-export const authorizedUser = (req, res, next) => {
-  if (req.user && req.user.type === "user") {
-    return next();
+export const authorizedUser = async(req, res, next) => {
+  const authHeader = req.headers['authorization'];
+
+  if (!authHeader) {
+    return res.status(401).json({message:"unauthorized user"})
   }
-  req.flash("error", "Please authenticate first!");
-  return res.redirect("/api/user/auth/login");
+
+  try {
+    const jwtToken = authHeader.match(/^Bearer (.+)/)[1];
+    const decodedHeader = jwt.decode(jwtToken, { complete: true });
+
+    if (!decodedHeader || !decodedHeader.payload.id) {
+      return res.status(401).json({message:"unauthorized user"})
+    }
+
+    const user = await User.findById(decodedHeader.payload.id);
+
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      return res.status(401).json({message:"unauthorized user"})
+    }
+  } catch (error) {
+    console.error('Error extracting user info:', error);
+    return res.status(401).json({message:"unauthorized user"})
+  }
+
 };
 
 export const checkUserModuleAccess = (moduleName) => {
