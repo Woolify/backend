@@ -87,6 +87,13 @@ import userAuthRoutes from "./routes/user/authRoute.js";
 // User Routes
 app.use("/api/user/auth", userAuthRoutes);
 
+// Farmer route imports
+import farmerRoutes from "./routes/farmer/primaryRoute.js";
+
+// User Routes
+app.use("/api/farmer/", farmerRoutes);
+
+// test route
 app.get("/test", (req,res)=>{
   res.status(200).send("Server is up & running...")
 })
