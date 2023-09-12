@@ -8,12 +8,13 @@ import {
   sendOtp,
   verifyOtp,
 } from "../../controllers/user/authController.js";
+import { extractUserInfo } from "../../middleWares/accessAuth.js";
 
 const router = express.Router();
 
 router
   .route("/login")
-  .post(loginUser);
+  .post(extractUserInfo,loginUser);
 
 router
   .route("/register")
