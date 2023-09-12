@@ -85,8 +85,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
   // TODO: Update slug in update profile controller
   user = await User.create(_user);
 
-  req.flash("success", "Registration successful.");
-  res.redirect("/api/user/auth/login");
+  res.status(200).json({message:"User registered successfullly"});
 });
 
 // forget pass
@@ -221,5 +220,15 @@ export const verifyOtp = catchAsyncError(async (req, res,next) => {
     res.status(200).json({ message: 'OTP verified successfully' });
   } else {
     res.status(400).json({ message: 'Invalid OTP' });
+  }
+})
+
+export const checkUsername = catchAsyncError(async(req, res, next) => {
+  const {username} = req.body;
+
+  const user = await User.findOne({username});
+
+  if (user) {
+    return res.status()
   }
 })
