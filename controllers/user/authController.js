@@ -114,11 +114,11 @@ export const userForgotPassword = catchAsyncError(async (req, res, next) => {
 
   console.log(response);
 
-  req.flash(
-    "success",
-    "Resent password link send to your registered email id."
-  );
-  res.redirect("/api/user/auth/login");
+  // req.flash(
+  //   "success",
+  //   "Resent password link send to your registered email id."
+  // );
+  // res.redirect("/api/user/auth/login");
 });
 
 // Reset password
@@ -150,7 +150,7 @@ export const userResetPassword = catchAsyncError(async (req, res, next) => {
 
   user.save();
 
-  req.flash("success", "Password reset successfully.");
+  // req.flash("success", "Password reset successfully.");
   res.sendStatus(200);
 });
 
@@ -186,8 +186,8 @@ export const userChangePassword = catchAsyncError(async (req, res, next) => {
   user.password = newPassword;
   await user.save();
 
-  req.flash("success", "Password updated successfully.");
-  res.redirect("/api/user/profile");
+  // req.flash("success", "Password updated successfully.");
+  // res.redirect("/api/user/profile");
 });
 
 export const sendOtp = catchAsyncError(async (req,res,next) => {
