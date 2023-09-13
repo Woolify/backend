@@ -23,10 +23,17 @@ const schema = new mongoose.Schema(
     weight:{
       type:String,
     },
+    lastShread:{
+      type: String,
+    },
     type:{
       type: String,
       enum: [ "sheep","goat","yak","camel","rabbit"],
       default:"sheep",
+    },
+    gender:{
+      type: String,
+      enum:["male","female"]
     },
     breed:{ 
       type: String,
