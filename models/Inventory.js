@@ -3,9 +3,9 @@ import mongoose, { Schema } from "mongoose";
 const schema = new mongoose.Schema(
   {
     owner:{
-      type: Schema.Types.ObjectId,
-      ref: "farmer",
-      required: true,
+      type: String,
+      enum: ["farmer", "vendor","user","artisan","transporter","consultant","service-provider","buyer","admin"],
+      default: "farmer",
     },
     ownerId: {
       type: Schema.Types.ObjectId,
@@ -26,4 +26,4 @@ const schema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Animal = mongoose.model("animal", schema ) 
+export const Inventory = mongoose.model("inventory", schema ) 
