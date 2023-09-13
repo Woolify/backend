@@ -5,6 +5,7 @@ import { catchAsyncError } from "../../middleWares/catchAsyncError.js";
 import { User } from "../../models/User.js";
 import { sendToken } from "../../utils/sendToken.js";
 import { generateOTP, sendCustomSMS } from '../../utils/sendSms.js';
+import { Farmer } from "../../models/Farmer.js";
 // import { sendResponse } from "../../utils/sendResponse.js";
 // import { sendEmail } from "../../utils/sendEmail.js";
 
@@ -82,8 +83,11 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
     _user.email=email;
   }
 
-  // TODO: Update slug in update profile controller
   user = await User.create(_user);
+  
+  if(user.role == "farmer"){
+    await Farmer.create({userId: user._id});
+  }
 
   res.status(200).json({message:"User registered successfullly"});
 });
