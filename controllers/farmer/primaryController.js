@@ -81,6 +81,8 @@ export const updateAnimalData = catchAsyncError(async (req,res,next) =>{
 })
 
 export const deleteAnimal = catchAsyncError(async (req,res, next) =>{
+  await Animal.findByIdAndUpdate(req.params.id, {deleted:true});
+  res.status(200).json({message: "Animal deleted successfully."})
 })
 
 export const getSingleAnimalData = catchAsyncError(async(req, res, next) => {
