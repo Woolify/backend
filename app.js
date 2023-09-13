@@ -84,9 +84,11 @@ app.use(function (req, res, next) {
 
 // User route imports
 import userAuthRoutes from "./routes/user/authRoute.js";
+import userPrimaryRoutes from "./routes/user/primaryRoute.js";
 
 // User Routes
 app.use("/api/user/auth", userAuthRoutes);
+app.use("/api/user/", userPrimaryRoutes);
 
 // Farmer route imports
 import farmerRoutes from "./routes/farmer/primaryRoute.js";
@@ -99,6 +101,7 @@ app.get("/test", (req,res)=>{
   res.status(200).send("Server is up & running...")
 })
 
+// fallback route
 app.get("*", (req, res) => {
   const responseType = req.accepts(["html", "json"]);
 
