@@ -15,6 +15,9 @@ const schema = new mongoose.Schema(
     capacity: {
       type: String,    
     },
+    shreadDate:{
+      type: String,
+    },
     typeOfWool:{ 
       type: String,
       enum: [ "merino","local indian wool","pashmina","angora","camel","yak","cashmere"],
