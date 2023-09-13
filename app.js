@@ -92,9 +92,11 @@ app.use("/api/user/", userPrimaryRoutes);
 
 // Farmer route imports
 import farmerRoutes from "./routes/farmer/primaryRoute.js";
-
-// User Routes
 app.use("/api/farmer/", farmerRoutes);
+
+// Bid Route
+import bidRoutes from "./routes/bid/bidRoute.js";
+app.use("/api/bid/", bidRoutes);
 
 // test route
 app.get("/test", (req,res)=>{
