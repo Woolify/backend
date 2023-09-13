@@ -37,7 +37,50 @@ export const generateQr = catchAsyncError(async (req,res,next) =>{
   return res.status(200).json(result)
 })
 export const updateAnimalData = catchAsyncError(async (req,res,next) =>{
+  const {
+    nickName,
+    age,
+    weight,
+    lastShread,
+    type,
+    breed,
+    descp,
+  } = req.body;
 
+  const animal = await Animal.findById(req.params.id);
+  
+  if(!animal){
+    return res.status(404).json({message:"Animal not found!"});
+  }
+
+  if (nickName) {
+    animal.nickName = nickName;
+  }
+  if (age) {
+    animal.age = age;
+  }
+  if (weight) {
+    animal.weight = weight;
+  }
+  if (lastShread) {
+    animal.lastShread = lastShread;
+  }
+  if (type) {
+    animal.type = type;
+  }
+  if (breed) {
+    animal.breed = breed;
+  }
+  if (descp) {
+    animal.descp = descp;
+  }
+
+  await animal.save();
+
+  res.status(200).json({animal});
+})
+
+export const deleteAnimal = catchAsyncError(async (req,res, next) =>{
 })
 
 export const getSingleAnimalData = catchAsyncError(async(req, res, next) => {
