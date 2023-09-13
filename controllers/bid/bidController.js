@@ -14,7 +14,65 @@ export const getSingleBid = (catchAsyncError(async(req,res,next) => {
 }))
 
 export const getAllBids = (catchAsyncError(async(req, res, next) => {
+    let query = {
+      deleted: false,
+    };
+    let limit = parseInt(req.query.perPage) || 10;
+    let page = req.query.page ? req.query.page : 1;
+    let skip = (page - 1) * (req.query.perPage ? req.query.perPage : 10);
+    let sort = req.query.sort ? {} : { createdAt: -1 };
+    let search = req.query.search;
 
+    if (search) {
+      let newSearchQuery = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      const regex = new RegExp(newSearchQuery, "gi");
+      query.$or = [
+        {
+          bid: regex,
+        },
+      ];
+    }
+
+    let aggregateQuery = [
+      {
+        $match: query,
+      },
+      {
+        $sort: sort,
+      },
+      {
+        $facet: {
+          data: [
+            {
+              $skip: skip,
+            },
+            {
+              $limit: limit,
+            },
+          ],
+          metadata: [
+            {
+              $match: query,
+            },
+            {
+              $count: "total",
+            },
+          ],
+        },
+      },
+    ];
+
+    const bids = await Bid.aggregate(aggregateQuery);
+
+    res.status(200).json({
+      bids: bids[0].data,
+      total: bids[0].metadata[0]
+        ? Math.ceil(bids[0].metadata[0].total / limit)
+        : 0,
+      page,
+      perPage: limit,
+      search: search ? search : "",
+    })
 }))
 
 export const createBid = (catchAsyncError(async(req, res, next) => {
