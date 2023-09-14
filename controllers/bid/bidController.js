@@ -1,5 +1,7 @@
 import { catchAsyncError } from "../../middleWares/catchAsyncError.js"
 import {Bid} from "../../models/Bid.js";
+import { User } from "../../models/User.js";
+import { Farmer } from "../../models/Farmer.js";
 
 export const getSingleBid = (catchAsyncError(async(req,res,next) => {
     const {id} = req.params;
@@ -15,7 +17,7 @@ export const getSingleBid = (catchAsyncError(async(req,res,next) => {
 
 export const getAllBids = (catchAsyncError(async(req, res, next) => {
     let query = {
-      deleted: false,
+      // deleted: false,
     };
     let limit = parseInt(req.query.perPage) || 10;
     let page = req.query.page ? req.query.page : 1;
@@ -76,7 +78,27 @@ export const getAllBids = (catchAsyncError(async(req, res, next) => {
 }))
 
 export const createBid = (catchAsyncError(async(req, res, next) => {
+  const {
+    basePrice,
+    quantity,
+    typeOfWool,
+    descp,
+  } = req.body;
 
+  const inventory = await Farmer.findOne({"ownerId": req.user._id},{"inventory":1});
+
+  let _bid = {
+    initializer:req.user._id,
+    inventory : inventory._id,
+    basePrice,
+    quantity,
+    typeOfWool,
+    descp,
+  } 
+
+  await Bid.create(_bid);
+
+  res.status(200).json({message: "Bid created successfully."});
 }))
 
 export const updateBid = (catchAsyncError(async(req, res, next) => {
