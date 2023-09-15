@@ -6,6 +6,7 @@ import { User } from "../../models/User.js";
 import { sendToken } from "../../utils/sendToken.js";
 import { generateOTP, sendCustomSMS } from '../../utils/sendSms.js';
 import { Farmer } from "../../models/Farmer.js";
+import { Vendor } from "../../models/Vendor.js";
 // import { sendResponse } from "../../utils/sendResponse.js";
 // import { sendEmail } from "../../utils/sendEmail.js";
 
@@ -87,6 +88,9 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
   
   if(user.role == "farmer"){
     await Farmer.create({userId: user._id});
+  }
+  if(user.role == "vendor"){
+    await Vendor.create({userId: user._id});
   }
 
   res.status(200).json({message:"User registered successfullly"});
