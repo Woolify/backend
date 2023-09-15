@@ -5,6 +5,7 @@ import {
   createBid,
   updateBid,
   deleteBid,
+  addBid,
 } from "../../controllers/bid/bidController.js";
 import { authorizedUser } from "../../middleWares/accessAuth.js";
 
@@ -17,11 +18,16 @@ router
 router
   .route("/list")
   .get(authorizedUser,getAllBids)
+
+router
+  .route("/add/:id")
+  .put(authorizedUser,addBid);
   
   router
     .route("/:id")
     .get(authorizedUser,getSingleBid)
     .put(authorizedUser,updateBid)
     .delete(authorizedUser,deleteBid);
+
 
 export default router;
