@@ -34,6 +34,9 @@ const schema = new mongoose.Schema(
               ref: "vendor",
               required: true,
             },
+            description : {
+              type: String,
+            },
             offeredPrice: {
               type: Number,
               required: true,
