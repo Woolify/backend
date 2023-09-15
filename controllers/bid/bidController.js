@@ -140,3 +140,29 @@ export const deleteBid = (catchAsyncError(async(req, res, next) => {
     await Bid.findByIdAndUpdate(req.params.id, {deleted:true});
     res.status(200).json({message: "Bid deleted successfully."})
 }))
+
+export const addBid = (catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { 
+    offeredPrice,
+    description,
+  } = req.body;
+
+  let _bid = {
+    bidder : req.user._id,
+    offeredPrice,
+    description,
+  };
+
+  if(description){
+    _bid.description = description
+  }
+
+  const bid = await Bid.findByIdAndUpdate(id, {$push : { bids: _bid }}, {new:true});
+
+  if(!bid){
+    res.status(500).json({ message: "error setting bid"});
+  } else {
+    res.status(200).json({message: "bid set successfully" , bid});
+  }
+}))
