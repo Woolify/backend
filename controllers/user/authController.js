@@ -21,6 +21,7 @@ export const loginUser = catchAsyncError(async (req, res, next) => {
   }).select("+password");
 
   if (!user) {
+    res.status(401).json({message:"Account with this credentials doesn't exist"})
     return next(
       new ErrorHandler("Account with this credentials doesn't exist.", 401)
     );
@@ -37,6 +38,7 @@ export const loginUser = catchAsyncError(async (req, res, next) => {
 
   let isMatch = await user.comparePassword(password);
   if (!isMatch) {
+    res.status(401).json({message:"Invalid login credentials"})
     return next(new ErrorHandler("Invalid login credentials", 401));
   }
 
