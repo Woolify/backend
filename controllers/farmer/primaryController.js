@@ -156,8 +156,6 @@ export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
   let sort = req.query.sort ? JSON.parse(req.query.sort) : { createdAt: -1 };
   let search = req.query.search;
 
-  return res.send(JSON.stringify(req.query.sort))
-
   if (search) {
     let newSearchQuery = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     const regex = new RegExp(newSearchQuery, "gi");
