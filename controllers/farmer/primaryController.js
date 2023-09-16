@@ -112,6 +112,7 @@ export const updateAnimalData = catchAsyncError(async (req,res,next) =>{
     animal.descp = descp;
   }
 
+  animal.saveAsDraft = false;
   await animal.save();
 
   res.status(200).json({animal});
@@ -133,4 +134,78 @@ export const getSingleAnimalData = catchAsyncError(async(req, res, next) => {
     return res.status(200).json({animal})
   }
 
+})
+
+export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
+  let query = {
+    // deleted: false,
+    owner: req.user._id
+  };
+
+  if(req.query.breed){
+    query.breed = req.query.breed
+  }
+
+  if(req.query.breed){
+    query.breed = req.query.breed
+  }
+
+  let limit = parseInt(req.query.perPage) || 10;
+  let page = req.query.page ? req.query.page : 1;
+  let skip = (page - 1) * (req.query.perPage ? req.query.perPage : 10);
+  let sort = req.query.sort ? JSON.parse(req.query.sort) : { createdAt: -1 };
+  let search = req.query.search;
+
+  return res.send(JSON.stringify(req.query.sort))
+
+  if (search) {
+    let newSearchQuery = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const regex = new RegExp(newSearchQuery, "gi");
+    query.$or = [
+      {
+        nickName: regex,
+      },
+    ];
+  }
+
+  let aggregateQuery = [
+    {
+      $match: query,
+    },
+    {
+      $sort: sort,
+    },
+    {
+      $facet: {
+        data: [
+          {
+            $skip: skip,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        metadata: [
+          {
+            $match: query,
+          },
+          {
+            $count: "total",
+          },
+        ],
+      },
+    },
+  ];
+
+  const animals = await Animal.aggregate(aggregateQuery);
+
+  res.status(200).json({
+    animals: animals[0].data,
+    total: animals[0].metadata[0]
+      ? Math.ceil(animals[0].metadata[0].total / limit)
+      : 0,
+    page,
+    perPage: limit,
+    search: search ? search : "",
+  })
 })
