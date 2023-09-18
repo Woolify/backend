@@ -4,6 +4,7 @@ import { catchAsyncError } from "../../middleWares/catchAsyncError.js"
 import {Animal} from "../../models/Animal.js";
 import {Farmer} from "../../models/Farmer.js";
 import PDFDocument from "pdfkit"
+import { Inventory } from "../../models/Inventory.js";
 
 
 const addAnimal = async(owner,name) => {
@@ -210,25 +211,45 @@ export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
 
 export const getInventoryData = catchAsyncError( async(req,res,next) => {
 
-  let user = await Farmer.findOne({ userId : req.user._id });
+  // let inventory = await Inventory.findOne({ ownerId : req.user._id }).populate();
 
 
 
-  res.status(200).json(user)
+  // res.status(200).json(inventory)
 })
 
 export const addInventoryData = catchAsyncError( async(req,res,next) => {
-  // let user = await Farmer.findOne({userId : req.user._id});
+  
+  const {
+    quantity,
+    typeOfWool,
+    color
+  } = req.body;
+  
+  let user = await Farmer.findOne({userId : req.user._id});
+  
+  const inventory = await Inventory.create({
+    owner: "farmer",
+    ownerId: user._id,
+    quantity,
+    typeOfWool,
+    color,
+  })
 
-  // let _inventory = {
+  user.inventory.push(inventory._id);
+  user.save();
 
-  // }
+  if(inventory) {
+    res.status(200).json({inventory, user});
+  } else {
+    res.status(500).json({message: "Error creating inventory!"})
+  }
 })
 
 export const updateInventory = catchAsyncError( async(req,res,next) => {
-
+  
 })
 
 export const deleteInventory = catchAsyncError( async(req,res,next) => {
-
-})
+  
+  })
