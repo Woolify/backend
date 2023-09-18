@@ -276,5 +276,11 @@ export const updateInventory = catchAsyncError( async(req,res,next) => {
 })
 
 export const deleteInventory = catchAsyncError( async(req,res,next) => {
-  
-  })
+  const inventory = Inventory.findById(req.user._id);
+
+  inventory.deleted = true;
+
+  inventory.save();
+
+  res.status(200).json({message:"inventory deleted successfully."})
+})
