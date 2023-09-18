@@ -207,3 +207,28 @@ export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
     search: search ? search : "",
   })
 })
+
+export const getInventoryData = catchAsyncError( async(req,res,next) => {
+
+  let user = await Farmer.findOne({ userId : req.user._id });
+
+
+
+  res.status(200).json(user)
+})
+
+export const addInventoryData = catchAsyncError( async(req,res,next) => {
+  // let user = await Farmer.findOne({userId : req.user._id});
+
+  // let _inventory = {
+
+  // }
+})
+
+export const updateInventory = catchAsyncError( async(req,res,next) => {
+
+})
+
+export const deleteInventory = catchAsyncError( async(req,res,next) => {
+
+})
