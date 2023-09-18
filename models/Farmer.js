@@ -16,25 +16,27 @@ const schema = new mongoose.Schema(
     rating:{
       type:String,
     },
-    inventory:{
-      type: Schema.Types.ObjectId,
-      ref:"inventory",
-    }
+    inventory:[
+      {
+        type: Schema.Types.ObjectId,
+        ref:"inventory",
+      }
+    ]
   }
 );
 
-schema.pre("save", async function (next) {
-  if (!this.isNew) {
-    return next();
-  }
+// schema.pre("save", async function (next) {
+//   if (!this.isNew) {
+//     return next();
+//   }
 
-  const inventory = await Inventory.create({
-    ownerId : this.userId,
-    owner:"farmer"
-  });
-  this.ownerId = inventory._id;
+//   const inventory = await Inventory.create({
+//     ownerId : this.userId,
+//     owner:"farmer"
+//   });
+//   this.ownerId = inventory._id;
 
-  return next();
-});
+//   return next();
+// });
 
 export const Farmer = mongoose.model("farmer",schema); 
