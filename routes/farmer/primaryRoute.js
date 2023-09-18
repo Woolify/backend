@@ -5,6 +5,10 @@ import {
     getSingleAnimalData,
     deleteAnimal,
     getAnimalsData,
+    getInventoryData,
+    addInventoryData,
+    updateInventory,
+    deleteInventory
 } from "../../controllers/farmer/primaryController.js";
 import upload from '../../middleWares/uploads.js'
 import { authorizedUser } from "../../middleWares/accessAuth.js";
@@ -21,9 +25,18 @@ router
 
 router
   .route("/animal/:id")
-  .get(getSingleAnimalData)
-  .put(updateAnimalData)
-  .delete(deleteAnimal);
+  .get(authorizedUser,getSingleAnimalData)
+  .put(authorizedUser,updateAnimalData)
+  .delete(authorizedUser,deleteAnimal);
 
+router
+  .route("/inventory")
+  .get(authorizedUser,getInventoryData)
+  .post(authorizedUser,addInventoryData);
+
+router
+  .route("/inventory/:id")
+  .put(authorizedUser,updateInventory)
+  .delete(authorizedUser,deleteInventory);
 
 export default router;
