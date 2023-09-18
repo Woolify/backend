@@ -166,3 +166,7 @@ export const addBid = (catchAsyncError(async (req, res, next) => {
     res.status(200).json({message: "bid set successfully" , bid});
   }
 }))
+
+export const confirmBid = (catchAsyncError(async(req, res, next) => {
+  
+}))
