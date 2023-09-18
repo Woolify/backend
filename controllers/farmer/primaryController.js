@@ -247,7 +247,32 @@ export const addInventoryData = catchAsyncError( async(req,res,next) => {
 })
 
 export const updateInventory = catchAsyncError( async(req,res,next) => {
-  
+  const { id } = req.params;
+  const {
+    quantity,
+    typeOfWool,
+    color,
+    listed
+  } =  req.body;
+
+  const inventory = Inventory.findById(id);
+
+  if(quantity){
+    inventory.quantity = quantity;
+  }
+  if(typeOfWool){
+    inventory.typeOfWool = typeOfWool;
+  }
+  if(color){
+    inventory.color = color;
+  }
+  if(listed){
+    inventory.listed = listed;
+  }
+
+  inventory.save();
+
+  res.status(200).json({message: "Inventory updated successfully."});
 })
 
 export const deleteInventory = catchAsyncError( async(req,res,next) => {
