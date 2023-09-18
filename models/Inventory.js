@@ -12,16 +12,31 @@ const schema = new mongoose.Schema(
       ref: "farmer",
       required: true,
     },
-    capacity: {
-      type: String,    
-    },
-    shreadDate:{
-      type: String,
+    quantity: {
+      type: Number,
+      required:true    
     },
     typeOfWool:{ 
       type: String,
       enum: [ "merino","local indian wool","pashmina","angora","camel","yak","cashmere"],
     },
+    color:{
+      type: String,
+      enum:[ "white","black","grey","brown","tan","beige","cream","fawn","chocolate","russet","silver"]
+    },
+    listed: {
+      type: Number,
+      validate: {
+        validator: function (value) {
+          return value <= this.quantity;
+        },
+        message: "Listed quantity cannot be greater than quantity",
+      },
+    },
+    deleted:{
+      type: Boolean,
+      default:false
+    }
   },
   { timestamps: true }
 );
