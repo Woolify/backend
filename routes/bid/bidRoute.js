@@ -6,6 +6,7 @@ import {
   updateBid,
   deleteBid,
   addBid,
+  confirmBid,
 } from "../../controllers/bid/bidController.js";
 import { authorizedUser } from "../../middleWares/accessAuth.js";
 
@@ -22,6 +23,10 @@ router
 router
   .route("/add/:id")
   .put(authorizedUser,addBid);
+
+router
+  .route("/confirm/:id")
+  .put(authorizedUser,confirmBid);
   
   router
     .route("/:id")
