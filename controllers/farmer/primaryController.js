@@ -220,7 +220,7 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
     },
     {
       $lookup: {
-        from: "inventories", 
+        from: "inventories",
         localField: "inventory",
         foreignField: "_id",
         as: "inventoryData",
@@ -234,14 +234,16 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
         _id: "$inventoryData.typeOfWool",
         totalQuantity: { $sum: "$inventoryData.quantity" },
         totalListed: { $sum: "$inventoryData.listed" },
+        color: { $first: "$inventoryData.color" },
       },
     },
     {
       $project: {
-        _id: 0, 
+        _id: 0,
         typeOfWool: "$_id",
         totalQuantity: 1,
         totalListed: 1,
+        color:1,
       },
     },
     {
@@ -250,12 +252,12 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
         inventoryData: { $push: "$$ROOT" },
         totalQuantity: { $sum: "$totalQuantity" },
         totalListed: { $sum: "$totalListed" },
-        totalTypeOfWool: { $sum: 1 }, 
+        totalTypeOfWool: { $sum: 1 },
       },
     },
     {
       $project: {
-        _id: 0, 
+        _id: 0,
         inventoryData: 1,
         totalQuantity: 1,
         totalListed: 1,
@@ -263,7 +265,6 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
       },
     },
   ];
-  
   
   const result = await Farmer.aggregate(pipeline).exec()
     
