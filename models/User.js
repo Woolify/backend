@@ -37,10 +37,17 @@ const schema = new mongoose.Schema(
       minLength: [10, "Please enter valid phone number."],
     },
     location: {
-      type: mongoose.Schema.Types.Mixed,
+      // type: mongoose.Schema.Types.Mixed,
       // coordinates: [Number], // For longitude,latitude coordinates
-      longitude:Number,
-      latitude:Number,
+      type: {
+        type: String,
+        enum: ['Point'], // geospatial indexing
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        index: '2dsphere', // for geospatial query
+      },
       address: String,  
       city: String,
       state: String,
@@ -128,13 +135,18 @@ schema.methods.getResetToken = async function () {
   return resetToken;
 };
 
-schema.methods.findUsersWithinRadius = async function (centerCoordinates, radiusInMeters) {
+schema.methods.findUsersWithinRadius = async function (centerCoordinates, radiusInMeters, role) {
   return this.model('user').find({
-    location: {
-      $geoWithin: {
-        $centerSphere: [centerCoordinates, radiusInMeters/ 6371000], // radius of eearth(in meter)
+    'location.coordinates': {
+      $nearSphere: {
+        $geometry: {
+          type: 'Point',
+          coordinates: centerCoordinates,
+        },
+        $maxDistance: radiusInMeters,
       },
     },
+    role
   }).exec();
 };
 
