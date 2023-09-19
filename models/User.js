@@ -38,11 +38,13 @@ const schema = new mongoose.Schema(
     },
     location: {
       type: mongoose.Schema.Types.Mixed,
-      coordinates: [Number], // For longitude,latitude coordinates
+      // coordinates: [Number], // For longitude,latitude coordinates
+      longitude:Number,
+      latitude:Number,
       address: String,  
       city: String,
       state: String,
-      country: String,
+      pincode: Number
     },   
     dob: {
       type: Date,
@@ -124,6 +126,16 @@ schema.methods.getResetToken = async function () {
 
   this.resetPasswordExpire = Date.now() + 50 * 60 * 1000;
   return resetToken;
-};;
+};
+
+schema.methods.findUsersWithinRadius = async function (centerCoordinates, radiusInMeters) {
+  return this.model('user').find({
+    location: {
+      $geoWithin: {
+        $centerSphere: [centerCoordinates, radiusInMeters/ 6371000], // radius of eearth(in meter)
+      },
+    },
+  }).exec();
+};
 
 export const User = mongoose.model("user",schema); 
