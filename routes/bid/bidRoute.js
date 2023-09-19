@@ -1,10 +1,10 @@
 import express from "express";
 import {
-  getAllBids,    
-  getSingleBid,
-  createBid,
-  updateBid,
-  deleteBid,
+  getAllAuctions,    
+  getSingleAuction,
+  createAuction,
+  updateAuction,
+  deleteAuction,
   addBid,
   confirmBid,
 } from "../../controllers/bid/bidController.js";
@@ -14,15 +14,15 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(authorizedUser,createBid)
+  .post(authorizedUser,createAuction)
 
 router
   .route("/list")
-  .get(authorizedUser,getAllBids)
+  .get(authorizedUser,getAllAuctions)
 
 router
   .route("/add/:id")
-  .put(authorizedUser,addBid);
+  .post(authorizedUser,addBid);
 
 router
   .route("/confirm/:id")
@@ -30,9 +30,9 @@ router
   
   router
     .route("/:id")
-    .get(authorizedUser,getSingleBid)
-    .put(authorizedUser,updateBid)
-    .delete(authorizedUser,deleteBid);
+    .get(authorizedUser,getSingleAuction)
+    .put(authorizedUser,updateAuction)
+    .delete(authorizedUser,deleteAuction);
 
 
 export default router;
