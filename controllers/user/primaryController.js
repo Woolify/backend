@@ -106,7 +106,7 @@ export const getUsersWithinRadius = catchAsyncError( async (req,res,next) => {
     longitude
   } = req.query;
 
-  const user = new User(); // Create a user instance
+  const user = new User();
   
   const users = await user.findUsersWithinRadius([longitude,latitude], radius,role?role:'vendor')
     
