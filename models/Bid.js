@@ -2,47 +2,23 @@ import mongoose, { Schema } from "mongoose";
 
 const schema = new mongoose.Schema(
     {
-        initializer: {
+        bidder: {
           type: Schema.Types.ObjectId,
-          ref: "farmer",
+          ref: "vendor",
           required: true,
         },
-        basePrice: {
+        auction:{
+          type: Schema.Types.ObjectId,
+          ref:"auction",
+          required:true
+        },
+        description : {
+          type: String,
+        },
+        offeredPrice: {
           type: Number,
           required: true,
         },
-        quantity:{
-            type:Number,
-            required:true,
-        },
-        inventory:{
-            type: Schema.Types.ObjectId,
-            ref:"inventory",
-            required:true,
-        },
-        status:{
-            type: Boolean,
-            default : false
-        },
-        descp:{
-          type: String,
-        },
-        bids: [
-          {
-            bidder: {
-              type: Schema.Types.ObjectId,
-              ref: "vendor",
-              required: true,
-            },
-            description : {
-              type: String,
-            },
-            offeredPrice: {
-              type: Number,
-              required: true,
-            },
-          },
-        ],
       },
       { timestamps: true }
     );
