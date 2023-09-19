@@ -2,20 +2,21 @@ import { catchAsyncError } from "../../middleWares/catchAsyncError.js"
 import {Bid} from "../../models/Bid.js";
 import { User } from "../../models/User.js";
 import { Farmer } from "../../models/Farmer.js";
+import { Auction } from "../../models/Auction.js";
 
-export const getSingleBid = (catchAsyncError(async(req,res,next) => {
+export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
     const {id} = req.params;
 
-    const bid = await Bid.findById(id);
+    const auction = await Auction.findById(id).populate('bids');
   
-    if (!bid) {
-      return res.status(404).json({message:"bid not found!"});
+    if (!auction) {
+      return res.status(404).json({message:"Auction not found!"});
     }else {
-      return res.status(200).json({bid});
+      return res.status(200).json(auction);
     }  
 }))
 
-export const getAllBids = (catchAsyncError(async(req, res, next) => {
+export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
     let query = {
       // deleted: false,
     };
@@ -64,12 +65,12 @@ export const getAllBids = (catchAsyncError(async(req, res, next) => {
       },
     ];
 
-    const bids = await Bid.aggregate(aggregateQuery);
+    const auctions = await Auction.aggregate(aggregateQuery);
 
     res.status(200).json({
-      bids: bids[0].data,
-      total: bids[0].metadata[0]
-        ? Math.ceil(bids[0].metadata[0].total / limit)
+      auctions: auctions[0].data,
+      total: auctions[0].metadata[0]
+        ? Math.ceil(auctions[0].metadata[0].total / limit)
         : 0,
       page,
       perPage: limit,
@@ -77,9 +78,10 @@ export const getAllBids = (catchAsyncError(async(req, res, next) => {
     })
 }))
 
-export const createBid = (catchAsyncError(async(req, res, next) => {
+export const createAuction = (catchAsyncError(async(req, res, next) => {
   const {
     basePrice,
+    maxPrice,
     quantity,
     typeOfWool,
     descp,
@@ -87,7 +89,7 @@ export const createBid = (catchAsyncError(async(req, res, next) => {
 
   const inventory = await Farmer.findOne({"ownerId": req.user._id},{"inventory":1});
 
-  let _bid = {
+  let _auction = {
     initializer:req.user._id,
     inventory : inventory._id,
     basePrice,
@@ -96,77 +98,100 @@ export const createBid = (catchAsyncError(async(req, res, next) => {
     descp,
   } 
 
-  await Bid.create(_bid);
+  if(maxPrice){
+    _auction.maxPrice = maxPrice;
+  }
 
-  res.status(200).json({message: "Bid created successfully."});
+  await Auction.create(_auction);
+
+  res.status(200).json({message: "Auction created successfully."});
 }))
 
-export const updateBid = (catchAsyncError(async(req, res, next) => {
+export const updateAuction = (catchAsyncError(async(req, res, next) => {
     const {
         basePrice,
+        maxPrice,
         quantity,
         status,
         descp,
       } = req.body;
     
-      const bid = await Bid.findById(req.params.id);
+      const auction = await Auction.findById(req.params.id);
       
-      if(!bid){
-        return res.status(404).json({message:"Bid not found!"});
+      if(!auction){
+        return res.status(404).json({message:"Auction not found!"});
       }
     
       if (basePrice) {
-        bid.basePrice = basePrice;
+        auction.basePrice = basePrice;
+      }
+    
+      if (maxPrice) {
+        auction.maxPrice = maxPrice;
       }
     
       if (quantity) {
-        bid.quantity = quantity;
+        auction.quantity = quantity;
       }
     
       if (status) {
-        bid.status = status;
+        auction.status = status;
       }
 
       if (descp) {
-        bid.descp = descp;
+        auction.descp = descp;
       }
     
-      await bid.save();
+      await auction.save();
     
-      res.status(200).json({bid});
+      res.status(200).json({auction});
 }))
 
-export const deleteBid = (catchAsyncError(async(req, res, next) => {
-    await Bid.findByIdAndUpdate(req.params.id, {deleted:true});
-    res.status(200).json({message: "Bid deleted successfully."})
+export const deleteAuction = (catchAsyncError(async(req, res, next) => {
+    await Auction.findByIdAndUpdate(req.params.id, {deleted:true});
+    res.status(200).json({message: "Auction deleted successfully."})
 }))
 
 export const addBid = (catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
+
   const { 
     offeredPrice,
     description,
   } = req.body;
 
-  let _bid = {
+  const bid = await Bid.create({
     bidder : req.user._id,
+    auction:id,
     offeredPrice,
-    description,
-  };
+  });
 
   if(description){
-    _bid.description = description
+    bid.description = description
   }
 
-  const bid = await Bid.findByIdAndUpdate(id, {$push : { bids: _bid }}, {new:true});
+  bid.save();
 
-  if(!bid){
-    res.status(500).json({ message: "error setting bid"});
+
+  const auction = await Auction.findByIdAndUpdate(id, {$push : { bids: bid._id }}, {new:true});
+
+  if(!auction){
+    res.status(500).json({ message: "Auction not found!"});
+    // res.status(500).json({ message: "error setting bid"});
   } else {
     res.status(200).json({message: "bid set successfully" , bid});
   }
 }))
 
 export const confirmBid = (catchAsyncError(async(req, res, next) => {
-  
+  const {id } = req.params;
+  const { bidId } = req.body;
+
+  const auction = await Auction.findByIdAndUpdate(id, { status:true, lockedBy:bidId });
+
+  if(auction){
+    res.status(200).json({message: "Bid confirmed successfully."});
+  } else {
+    res.status(200).json({message: "Error confirming bid!"});
+  }
 }))
