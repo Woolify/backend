@@ -56,8 +56,9 @@ export const updateUser = catchAsyncError(async(req,res,next) => {
   let _location = {};
 
   if(longitude && latitude){
-    _location.longitude = longitude;
-    _location.latitude = latitude;
+    _location.coordinates = [longitude, latitude];
+    // _location.longitude = longitude;
+    // _location.latitude = latitude;
   }
   if(address){
     _location.address = address;
@@ -95,4 +96,24 @@ export const updateUser = catchAsyncError(async(req,res,next) => {
 export const deleteUser = catchAsyncError(async(req,res,next) => {
     await User.findByIdAndUpdate(req.params.id, {deleted:true});
     res.status(200).json({message: "User deleted successfully."})
+})
+
+export const getUsersWithinRadius = catchAsyncError( async (req,res,next) => {
+  const {
+    role,
+    radius,
+    latitude,
+    longitude
+  } = req.query;
+
+  const user = new User(); // Create a user instance
+  
+  const users = await user.findUsersWithinRadius([longitude,latitude], radius,role?role:'vendor')
+    
+  if(users){
+    res.status(200).json(users)
+  } else {
+    res.status(500).json({message:"Error extracting users data"});
+  }
+
 })
