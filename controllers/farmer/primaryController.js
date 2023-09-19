@@ -211,11 +211,68 @@ export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
 
 export const getInventoryData = catchAsyncError( async(req,res,next) => {
 
-  // let inventory = await Inventory.findOne({ ownerId : req.user._id }).populate();
 
+  const pipeline = [
+    {
+      $match: {
+        userId: req.user._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "inventories", 
+        localField: "inventory",
+        foreignField: "_id",
+        as: "inventoryData",
+      },
+    },
+    {
+      $unwind: "$inventoryData",
+    },
+    {
+      $group: {
+        _id: "$inventoryData.typeOfWool",
+        totalQuantity: { $sum: "$inventoryData.quantity" },
+        totalListed: { $sum: "$inventoryData.listed" },
+      },
+    },
+    {
+      $project: {
+        _id: 0, 
+        typeOfWool: "$_id",
+        totalQuantity: 1,
+        totalListed: 1,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        inventoryData: { $push: "$$ROOT" },
+        totalQuantity: { $sum: "$totalQuantity" },
+        totalListed: { $sum: "$totalListed" },
+        totalTypeOfWool: { $sum: 1 }, 
+      },
+    },
+    {
+      $project: {
+        _id: 0, 
+        inventoryData: 1,
+        totalQuantity: 1,
+        totalListed: 1,
+        totalTypeOfWool: 1,
+      },
+    },
+  ];
+  
+  
+  const result = await Farmer.aggregate(pipeline).exec()
+    
+  if(result){
+    res.status(200).json(result[0]);
+  } else {
+    res.status(500).json({message: "error extracting data"});
+  }
 
-
-  // res.status(200).json(inventory)
 })
 
 export const addInventoryData = catchAsyncError( async(req,res,next) => {
