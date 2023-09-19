@@ -14,7 +14,82 @@ export const getUser = catchAsyncError(async(req,res,next) => {
 })
 
 export const updateUser = catchAsyncError(async(req,res,next) => {
+  const {id} = req.params;
+  const {
+    firstName,
+    lastName,
+    username,
+    email,
+    latitude,
+    longitude,
+    address,
+    city,
+    state,
+    pincode,
+    dob,
+    gender,
+    description,
+  } = req.body;
 
+  let _user = {};
+
+  if(firstName){
+    _user.firstName = firstName;
+  }
+  if(lastName){
+    _user.lastName = lastName;
+  }
+  if(username){
+    const userWithUsername = await User.findOne({username});
+
+    if (!userWithUsername) {
+      _user.username = username;
+    } else {
+      return res.status(409).json({message: "username already exist"});
+    }
+  }
+
+  if(email){
+    _user.email = email;
+  }
+
+  let _location = {};
+
+  if(longitude && latitude){
+    _location.longitude = longitude;
+    _location.latitude = latitude;
+  }
+  if(address){
+    _location.address = address;
+  }
+  if(city){
+    _location.city = city;
+  }
+  if(state){
+    _location.state = state;
+  }
+  if(pincode){
+    _location.pincode = pincode;
+  }
+  _user.location=_location
+  if(dob){
+    _user.dob = dob;
+  }
+  if(gender){
+    _user.gender = gender;
+  }
+  if(description){
+    _user.description = description;
+  }
+
+  const user = await User.findByIdAndUpdate(id, _user);
+
+  if (!user) {
+    return res.status(409).json({message:"Error updating user!"});
+    // return res.status(404).json({message:"user not found!"});
+  }
+
+  return res.status(200).json({ message: "User updated successfully.",user})
 })
 
 export const deleteUser = catchAsyncError(async(req,res,next) => {
