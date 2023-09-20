@@ -100,7 +100,9 @@ app.use("/api/bid/", bidRoutes);
 
 // test route
 app.get("/test", (req,res)=>{
-  res.status(200).send("Server is up & running...")
+  
+  res.render("test");
+  // res.status(200).send("Server is up & running...")
 })
 
 // fallback route
