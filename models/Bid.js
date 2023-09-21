@@ -19,6 +19,9 @@ const schema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        status:{
+          type : Boolean,
+        }
       },
       { timestamps: true }
     );
