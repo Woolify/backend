@@ -160,10 +160,14 @@ export const addBid = (catchAsyncError(async (req, res, next) => {
     description,
   } = req.body;
 
+  const currentHighestBid = await Bid.findOneAndUpdate({ auction:id , status:true , offeredPrice: {$gt:offeredPrice}},{status:false}, { new: true });
+
+  // return console.log(currentHighestBid)
   const bid = await Bid.create({
     bidder : req.user._id,
     auction:id,
     offeredPrice,
+    status : currentHighestBid === null ? true:false
   });
 
   if(description){
