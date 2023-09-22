@@ -9,12 +9,13 @@ import {
   confirmBid,
 } from "../../controllers/bid/bidController.js";
 import { authorizedUser } from "../../middleWares/accessAuth.js";
+import upload from "../../middleWares/uploads.js";
 
 const router = express.Router();
 
 router
   .route("/")
-  .post(authorizedUser,createAuction)
+  .post(authorizedUser,upload,createAuction)
 
 router
   .route("/list")
