@@ -3,11 +3,13 @@ import {Bid} from "../../models/Bid.js";
 import { User } from "../../models/User.js";
 import { Farmer } from "../../models/Farmer.js";
 import { Auction } from "../../models/Auction.js";
+import { Inventory } from "../../models/Inventory.js";
 
 export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
     const {id} = req.params;
 
-    const auction = await Auction.findById(id).populate('bids');
+    const auction = await Auction.findById(id).populate('inventory');
+    // const auction = await Auction.findById(id).populate(['inventory','bids']);
   
     if (!auction) {
       return res.status(404).json({message:"Auction not found!"});
@@ -83,16 +85,29 @@ export const createAuction = (catchAsyncError(async(req, res, next) => {
     basePrice,
     maxPrice,
     quantity,
+    inventory,
     typeOfWool,
     descp,
   } = req.body;
 
-  const inventory = await Farmer.findOne({"ownerId": req.user._id},{"inventory":1});
+  // const inventory = await Farmer.findOne({"ownerId": req.user._id},{"inventory":1});
+
+  const inventoryData = await Inventory.findById(inventory);
+
+  if(inventoryData.quantity < quantity){
+    return res.status(409).json({message: "Quantity excide inventory quantity."})
+  } else {
+    inventoryData.quantity = inventoryData.quantity - quantity;
+    inventoryData.save(); 
+  }
+
+  const woolImg = process.env.BACKEND_URL + (req.files.woolImg[0].path).slice(6);
 
   let _auction = {
     initializer:req.user._id,
-    inventory : inventory._id,
+    inventory,
     basePrice,
+    woolImg,
     quantity,
     typeOfWool,
     descp,
