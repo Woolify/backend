@@ -137,18 +137,14 @@ export const getSingleAnimalData = catchAsyncError(async(req, res, next) => {
 
 })
 
-export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
+export const getAnimalsData = catchAsyncError(async (req, res, next) => {
   let query = {
     // deleted: false,
-    owner: req.user._id
+    owner: req.user._id,
   };
 
-  if(req.query.breed){
-    query.breed = req.query.breed
-  }
-
-  if(req.query.breed){
-    query.breed = req.query.breed
+  if (req.query.breed) {
+    query.breed = req.query.breed;
   }
 
   let limit = parseInt(req.query.perPage) || 10;
@@ -172,16 +168,24 @@ export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
       $match: query,
     },
     {
-      $sort: sort,
-    },
-    {
       $facet: {
-        data: [
+        animals: [
+          {
+            $sort: sort,
+          },
           {
             $skip: skip,
           },
           {
             $limit: limit,
+          },
+        ],
+        AnimalsData: [
+          {
+            $group: {
+              _id: { type: "$type", breed: "$breed" },
+              numberOfSheeps: { $sum: 1 },
+            },
           },
         ],
         metadata: [
@@ -194,20 +198,23 @@ export const getAnimalsData = catchAsyncError( async( req, res, next ) => {
         ],
       },
     },
+    {
+      $unwind: "$metadata",
+    },
   ];
 
   const animals = await Animal.aggregate(aggregateQuery);
 
   res.status(200).json({
-    animals: animals[0].data,
-    total: animals[0].metadata[0]
-      ? Math.ceil(animals[0].metadata[0].total / limit)
-      : 0,
+    animals: animals[0].animals,
+    AnimalsData: animals[0].AnimalsData,
+    total: animals[0].metadata ? Math.ceil(animals[0].metadata.total / limit) : 0,
     page,
     perPage: limit,
     search: search ? search : "",
-  })
-})
+  });
+});
+
 
 export const getInventoryData = catchAsyncError( async(req,res,next) => {
 
