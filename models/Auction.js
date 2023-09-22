@@ -20,6 +20,10 @@ const schema = new mongoose.Schema(
             message: "max price cannot be less than base Price",
           },
         },
+        woolImg:{
+          type:String,
+          required:true,
+        },
         quantity:{
             type:Number,
             required:true,
