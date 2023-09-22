@@ -269,7 +269,7 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
   const result = await Farmer.aggregate(pipeline).exec()
     
   if(result){
-    res.status(200).json(result[0]);
+    res.status(200).json(result);
   } else {
     res.status(500).json({message: "error extracting data"});
   }
