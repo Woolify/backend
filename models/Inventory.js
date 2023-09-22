@@ -14,7 +14,7 @@ const schema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
-      required:true    
+      // required:true    
     },
     typeOfWool:{ 
       type: String,
