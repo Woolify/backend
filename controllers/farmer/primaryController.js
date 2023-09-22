@@ -242,6 +242,7 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
         totalQuantity: { $sum: "$inventoryData.quantity" },
         totalListed: { $sum: "$inventoryData.listed" },
         color: { $first: "$inventoryData.color" },
+        inventoryId: { $first: "$inventoryData._id" },
       },
     },
     {
@@ -250,7 +251,8 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
         typeOfWool: "$_id",
         totalQuantity: 1,
         totalListed: 1,
-        color:1,
+        color: 1,
+        inventoryId: 1,
       },
     },
     {
@@ -259,7 +261,6 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
         inventoryData: { $push: "$$ROOT" },
         totalQuantity: { $sum: "$totalQuantity" },
         totalListed: { $sum: "$totalListed" },
-        totalTypeOfWool: { $sum: 1 },
       },
     },
     {
@@ -268,10 +269,11 @@ export const getInventoryData = catchAsyncError( async(req,res,next) => {
         inventoryData: 1,
         totalQuantity: 1,
         totalListed: 1,
-        totalTypeOfWool: 1,
+        totalTypeOfWool: { $size: "$inventoryData" },
       },
     },
   ];
+  
   
   const result = await Farmer.aggregate(pipeline).exec()
     
