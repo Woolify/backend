@@ -205,14 +205,19 @@ export const getAnimalsData = catchAsyncError(async (req, res, next) => {
 
   const animals = await Animal.aggregate(aggregateQuery);
 
-  res.status(200).json({
-    animals: animals[0].animals,
-    AnimalsData: animals[0].AnimalsData,
-    total: animals[0].metadata ? Math.ceil(animals[0].metadata.total / limit) : 0,
-    page,
-    perPage: limit,
-    search: search ? search : "",
-  });
+  if(animals.length != 0){
+    res.status(200).json({
+      animals: animals[0].animals,
+      AnimalsData: animals[0]?.AnimalsData,
+      total: animals[0].metadata ? Math.ceil(animals[0].metadata.total / limit) : 0,
+      page,
+      perPage: limit,
+      search: search ? search : "",
+    });
+  } else {
+    res.status(200).json(animals)
+  }
+
 });
 
 
