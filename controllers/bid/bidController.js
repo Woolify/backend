@@ -107,7 +107,7 @@ export const createAuction = (catchAsyncError(async(req, res, next) => {
     return res.status(409).json({message: "Quantity excide inventory quantity."})
   } else {
     inventoryData.quantity = inventoryData.quantity - quantity;
-    inventoryData.listed = inventoryData.listed + quantity;
+    inventoryData.listed =+ quantity;
     inventoryData.save(); 
   }
 
