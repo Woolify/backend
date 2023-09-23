@@ -15,6 +15,7 @@ import passport from "passport";
 import morgan from "morgan";
 import expressSanitizer from "express-sanitizer";
 import "./middleWares/auth.js";
+import { attachSocketToRequest } from "./config/socket.js";
 
 config({ path: "./config/config.env" });
 const app = express();
@@ -70,6 +71,8 @@ app.use(flash());
 app.use(expressSanitizer());
 app.use(morgan("combined", { stream: accessLogStream }));
 
+app.use(attachSocketToRequest);
+
 app.use(function (req, res, next) {
   res.locals.currentUser = req.user || null;
   res.locals.username = req.user
@@ -100,7 +103,6 @@ app.use("/api/bid/", bidRoutes);
 
 // test route
 app.get("/test", (req,res)=>{
-  
   res.render("test");
   // res.status(200).send("Server is up & running...")
 })
