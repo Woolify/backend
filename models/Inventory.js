@@ -26,12 +26,12 @@ const schema = new mongoose.Schema(
     },
     listed: {
       type: Number,
-      validate: {
-        validator: function (value) {
-          return value <= this.quantity;
-        },
-        message: "Listed quantity cannot be greater than quantity",
-      },
+      // validate: {
+      //   validator: function (value) {
+      //     return value <= this.quantity;
+      //   },
+      //   message: "Listed quantity cannot be greater than quantity",
+      // },
     },
     deleted:{
       type: Boolean,
