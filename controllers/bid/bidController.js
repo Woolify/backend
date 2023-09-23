@@ -8,7 +8,20 @@ import { Inventory } from "../../models/Inventory.js";
 export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
     const {id} = req.params;
 
-    const auction = await Auction.findById(id).populate('inventory');
+    const auction = await Auction.findById(id).populate([
+      {
+        path:'inventory',
+        select:'-_id quantity typeOfWool color listed'
+      },
+      {
+        path: 'initializer',
+        populate:{
+          path:'location',
+          select : '-type'
+        },
+        select: '-_id firstName lastName email phone isVerified ' 
+      }
+    ]);
     // const auction = await Auction.findById(id).populate(['inventory','bids']);
   
     if (!auction) {
