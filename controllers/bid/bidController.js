@@ -4,6 +4,7 @@ import { User } from "../../models/User.js";
 import { Farmer } from "../../models/Farmer.js";
 import { Auction } from "../../models/Auction.js";
 import { Inventory } from "../../models/Inventory.js";
+import { sendNotification } from "../../utils/sendNotification.js";
 
 export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
     const {id} = req.params;
@@ -142,6 +143,9 @@ export const createAuction = (catchAsyncError(async(req, res, next) => {
 
   await Auction.create(_auction);
 
+  const user = await User.findById(req.user._id , {socketId:1}); 
+  sendNotification(req.io,user.socketId,"Auction created successfully")
+
   res.status(200).json({message: "Auction created successfully."});
 }))
 
@@ -181,12 +185,20 @@ export const updateAuction = (catchAsyncError(async(req, res, next) => {
       }
     
       await auction.save();
+
+
+  const user = await User.findById(req.user._id , {socketId:1}); 
+  sendNotification(req.io,user.socketId,"Auction updated successfully")
     
       res.status(200).json({auction});
 }))
 
 export const deleteAuction = (catchAsyncError(async(req, res, next) => {
     await Auction.findByIdAndUpdate(req.params.id, {deleted:true});
+
+  const user = await User.findById(req.user._id , {socketId:1}); 
+  sendNotification(req.io,user.socketId,"Auction deleted successfully")
+
     res.status(200).json({message: "Auction deleted successfully."})
 }))
 
@@ -221,6 +233,10 @@ export const addBid = (catchAsyncError(async (req, res, next) => {
     res.status(500).json({ message: "Auction not found!"});
     // res.status(500).json({ message: "error setting bid"});
   } else {
+
+  const user = await User.findById(req.user._id , {socketId:1}); 
+  sendNotification(req.io,user.socketId,"Bid set successfully")
+
     res.status(200).json({message: "bid set successfully" , bid});
   }
 }))
@@ -232,6 +248,10 @@ export const confirmBid = (catchAsyncError(async(req, res, next) => {
   const auction = await Auction.findByIdAndUpdate(id, { status:true, lockedBy:bidId });
 
   if(auction){
+
+  const user = await User.findById(req.user._id , {socketId:1}); 
+  sendNotification(req.io,user.socketId,"Bid confirmed successfully")
+
     res.status(200).json({message: "Bid confirmed successfully."});
   } else {
     res.status(200).json({message: "Error confirming bid!"});
