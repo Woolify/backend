@@ -4,7 +4,7 @@ const schema = new mongoose.Schema(
     {
         initializer: {
           type: Schema.Types.ObjectId,
-          ref: "farmer",
+          ref: "user",
           required: true,
         },
         basePrice: {
