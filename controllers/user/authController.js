@@ -56,6 +56,15 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
     confirmPassword,
     phone,
     email,
+    longitude,
+    latitude,
+    address,
+    city,
+    state,
+    pincode,
+    dob,
+    gender,
+    description
   } = req.body;
 
   let user = await User.findOne({ username });
@@ -84,6 +93,37 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
 
   if (email) {
     _user.email=email;
+  }
+
+  let _location = {};
+
+  if(longitude && latitude){
+    _location.coordinates = [longitude, latitude];
+    // _location.longitude = longitude;
+    // _location.latitude = latitude;
+  }
+  if(address){
+    _location.address = address;
+  }
+  if(city){
+    _location.city = city;
+  }
+  if(state){
+    _location.state = state;
+  }
+  if(pincode){
+    _location.pincode = pincode;
+  }
+  _user.location=_location;
+
+  if(dob){
+    _user.dob = dob;
+  }
+  if(gender){
+    _user.gender = gender;
+  }
+  if(description){
+    _user.description = description;
   }
 
   user = await User.create(_user);
