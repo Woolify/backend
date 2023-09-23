@@ -19,8 +19,8 @@ export const configureSocket = (httpServer) => {
   io.on("connection", (socket) => {
     console.log(`User connected: socket ID ${socket.id}, User ID ${socket.user._id}`);
 
-    socket.on("notification", ({ userId, content }) => {
-      sendNotification(io, userId, content);
+    socket.on("notification", ({ userId, socketId, content }) => {
+      sendNotification(io, userId, socketId, content);
     });
 
     socket.on("disconnect", () => {
