@@ -46,6 +46,17 @@ export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
         $sort: sort,
       },
       {
+        $lookup: {
+          from: 'inventories',
+          localField: 'inventory',
+          foreignField: '_id',
+          as: 'inventory',
+        },
+      },
+      {
+        $unwind: '$inventory',
+      },
+      {
         $facet: {
           data: [
             {
@@ -57,18 +68,15 @@ export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
           ],
           metadata: [
             {
-              $match: query,
-            },
-            {
               $count: "total",
             },
           ],
         },
       },
     ];
-
+    
     const auctions = await Auction.aggregate(aggregateQuery);
-
+    
     res.status(200).json({
       auctions: auctions[0].data,
       total: auctions[0].metadata[0]
@@ -77,7 +85,8 @@ export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
       page,
       perPage: limit,
       search: search ? search : "",
-    })
+    });
+    
 }))
 
 export const createAuction = (catchAsyncError(async(req, res, next) => {
@@ -90,7 +99,7 @@ export const createAuction = (catchAsyncError(async(req, res, next) => {
     descp,
   } = req.body;
 
-  // const inventory = await Farmer.findOne({"ownerId": req.user._id},{"inventory":1});
+  // const inventory = await Farmer.findOne({"ownerId": req.user._id},{"inventory":1});z
 
   const inventoryData = await Inventory.findById(inventory);
 
@@ -98,6 +107,7 @@ export const createAuction = (catchAsyncError(async(req, res, next) => {
     return res.status(409).json({message: "Quantity excide inventory quantity."})
   } else {
     inventoryData.quantity = inventoryData.quantity - quantity;
+    inventoryData.listed = inventoryData.listed + quantity;
     inventoryData.save(); 
   }
 
