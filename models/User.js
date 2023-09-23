@@ -78,6 +78,9 @@ const schema = new mongoose.Schema(
       type:Boolean,
       default:false,
     },
+    socketId:{
+      type:String,
+    },
     // createdBy: {
     //   type: Schema.Types.ObjectId,
     //   ref: "admin",
