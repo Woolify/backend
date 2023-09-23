@@ -30,3 +30,8 @@ export const configureSocket = (httpServer) => {
 
   return io;
 };
+
+export const attachSocketToRequest = (req,res,next) => {
+  req.io = io;
+  next();
+};
