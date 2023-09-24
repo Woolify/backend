@@ -21,6 +21,9 @@ export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
           select : '-type'
         },
         select: '-_id firstName lastName email phone isVerified ' 
+      },
+      {
+        path:'bids'
       }
     ]);
     // const auction = await Auction.findById(id).populate(['inventory','bids']);
@@ -28,7 +31,18 @@ export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
     if (!auction) {
       return res.status(404).json({message:"Auction not found!"});
     }else {
-      return res.status(200).json(auction);
+      const highestBid = auction.bids.reduce((highest, bid) => {
+        if (!highest || bid.offeredPrice > highest.offeredPrice) {
+          return bid;
+        }
+        return highest;
+      }, null);
+    
+      const auctionWithHighestBid = {
+        ...auction.toObject(),
+        highestBidDocument: highestBid || null,
+      };
+      return res.status(200).json(auctionWithHighestBid);
     }  
 }))
 
