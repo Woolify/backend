@@ -69,7 +69,8 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
 
   let user = await User.findOne({ username });
   if (user) {
-    return next(new ErrorHandler("Account already exist.", 409));
+    return res.status(409).json({message:'Account already exist!'})
+    // return next(new ErrorHandler("Account already exist.", 409));
   }
   if (phone.length < 10) {
     return next(new ErrorHandler("Please enter valid phone number.", 422));
