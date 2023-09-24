@@ -71,6 +71,66 @@ export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
         $unwind: '$inventory',
       },
       {
+        $lookup: {
+          from: 'bids',
+          localField: '_id',
+          foreignField: 'auction',
+          as: 'bids',
+        },
+      },
+      {
+        $unwind: {
+          path: '$bids',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'bids.bidder',
+          foreignField: '_id',
+          as: 'bids.bidder',
+        },
+      },
+      {
+        $unwind: {
+          path: '$bids.bidder',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          bids: {
+            $push: '$bids',
+          },
+          highestBid: {
+            $max: '$bids.offeredPrice',
+          },
+          otherFields: {
+            $first: '$$ROOT',
+          },
+        },
+      },
+      {
+        $addFields: {
+          highestBidDocument: {
+            $filter: {
+              input: '$bids',
+              as: 'bid',
+              cond: { $eq: ['$$bid.offeredPrice', '$highestBid'] },
+            },
+          },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ['$otherFields', { bids: '$bids', highestBidDocument: { $arrayElemAt: ['$highestBidDocument', 0] } }],
+          },
+        },
+      },
+      {
         $facet: {
           data: [
             {
