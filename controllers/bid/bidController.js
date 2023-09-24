@@ -269,16 +269,23 @@ export const addBid = (catchAsyncError(async (req, res, next) => {
     offeredPrice,
     description,
   } = req.body;
-
-  const currentHighestBid = await Bid.findOneAndUpdate({ auction:id , status:true , offeredPrice: {$gt:offeredPrice}},{status:false}, { new: true });
-
-  // return console.log(currentHighestBid)
+  
+  const currentHighestBid = await Bid.findOne(
+    { auction: id, status: true, offeredPrice: { $gt: offeredPrice } }
+  );
+  
+  if (currentHighestBid) {
+    await Bid.updateMany({ auction: id, _id: { $ne: currentHighestBid._id } }, { status: false });
+  }
+  
+  const status = currentHighestBid === null ? true : false;
+  
   const bid = await Bid.create({
-    bidder : req.user._id,
-    auction:id,
+    bidder: req.user._id,
+    auction: id,
     offeredPrice,
-    status : currentHighestBid === null ? true:false
-  });
+    status,
+  });   
 
   if(description){
     bid.description = description
