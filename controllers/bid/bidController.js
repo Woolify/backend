@@ -224,7 +224,7 @@ export const createAuction = (catchAsyncError(async(req, res, next) => {
 
   await Auction.create(_auction);
 
-  sendNotification(req.io,"Auction created successfully")
+  sendNotification(req.io,"Auction created successfully", "vendor")
   // const user = await User.findById(req.user._id , {socketId:1}); 
   // sendNotification(req.io,user._id,user.socketId,"Auction created successfully")
 
@@ -269,7 +269,7 @@ export const updateAuction = (catchAsyncError(async(req, res, next) => {
       await auction.save();
 
 
-      sendNotification(req.io,"Auction updated successfully")
+      sendNotification(req.io,"Auction updated successfully","farmer")
   // const user = await User.findById(req.user._id , {socketId:1}); 
   // sendNotification(req.io,user._id,user.socketId,"Auction updated successfully")
     
@@ -279,7 +279,7 @@ export const updateAuction = (catchAsyncError(async(req, res, next) => {
 export const deleteAuction = (catchAsyncError(async(req, res, next) => {
     await Auction.findByIdAndUpdate(req.params.id, {deleted:true});
 
-  sendNotification(req.io ,"Auction deleted successfully")
+  sendNotification(req.io ,"Auction deleted successfully","farmer")
   // const user = await User.findById(req.user._id , {socketId:1}); 
   // sendNotification(req.io,user._id,user.socketId,"Auction deleted successfully")
 
@@ -325,7 +325,7 @@ export const addBid = (catchAsyncError(async (req, res, next) => {
     // res.status(500).json({ message: "error setting bid"});
   } else {
 
-    sendNotification(req.io,"Bid set successfully")
+    sendNotification(req.io,"Bid set successfully","farmer")
   // const user = await User.findById(req.user._id , {socketId:1}); 
   // sendNotification(req.io,user._id,user.socketId,"Bid set successfully")
 
@@ -341,7 +341,7 @@ export const confirmBid = (catchAsyncError(async(req, res, next) => {
 
   if(auction){
 
-    sendNotification(req.io,"Bid confirmed successfully")
+    sendNotification(req.io,"Bid confirmed successfully","vendor")
   // const user = await User.findById(req.user._id , {socketId:1}); 
   // sendNotification(req.io,user._id,user.socketId,"Bid confirmed successfully")
 
