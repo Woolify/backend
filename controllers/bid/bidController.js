@@ -50,16 +50,20 @@ export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
 }))
 
 export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
-    let query = {
-      // deleted: false,
-    };
-    let limit = parseInt(req.query.perPage) || 10;
-    let page = req.query.page ? req.query.page : 1;
-    let skip = (page - 1) * (req.query.perPage ? req.query.perPage : 10);
-    let sort = req.query.sort ? {} : { createdAt: -1 };
-    let search = req.query.search;
+  
+  let limit = parseInt(req.query.perPage) || 10;
+  let page = req.query.page ? req.query.page : 1;
+  let skip = (page - 1) * (req.query.perPage ? req.query.perPage : 10);
+  let sort = req.query.sort ? {} : { createdAt: -1 };
+  let search = req.query.search;
+  let status = req.query.status == 'false' ? false : true
 
-    if (search) {
+  let query = {
+    // deleted: false,
+    status
+  };
+
+  if (search) {
       let newSearchQuery = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
       const regex = new RegExp(newSearchQuery, "gi");
       query.$or = [
