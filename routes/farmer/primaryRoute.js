@@ -8,7 +8,8 @@ import {
     getInventoryData,
     addInventoryData,
     updateInventory,
-    deleteInventory
+    deleteInventory,
+    getFarmersBids
 } from "../../controllers/farmer/primaryController.js";
 import upload from '../../middleWares/uploads.js'
 import { authorizedUser } from "../../middleWares/accessAuth.js";
@@ -38,5 +39,9 @@ router
   .route("/inventory/:id")
   .put(authorizedUser,updateInventory)
   .delete(authorizedUser,deleteInventory);
+
+router
+  .route("/bids/list")
+  .get(authorizedUser,getFarmersBids);
 
 export default router;
