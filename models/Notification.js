@@ -5,7 +5,6 @@ const schema = new mongoose.Schema({
     type:String,
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
-    required: true,
   },
   content: {
     type: String,

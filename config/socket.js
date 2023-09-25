@@ -12,16 +12,22 @@ export const configureSocket = (httpServer) => {
     },
   });
 
-  io.use(socketAuthMiddleware)
+  // io.use(socketAuthMiddleware)
 
   // initializeMessageHandling(io);
 
   io.on("connection", (socket) => {
-    console.log(`User connected: socket ID ${socket.id}, User ID ${socket.user._id}`);
+    // console.log(`User connected: socket ID ${socket.id}, User ID ${socket.user._id}`);
+    console.log(`User connected: socket ID ${socket.id}}`);
 
-    socket.on("notification", ({ userId, socketId, content }) => {
-      sendNotification(io, userId, socketId, content);
+    // socket.on("notification", ({ userId, socketId, content }) => {
+    //   sendNotification(io, userId, socketId, content);
+    // });
+
+    socket.on("notification", ({ content }) => {
+      sendNotification(io,content);
     });
+
 
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);

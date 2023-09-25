@@ -13,14 +13,15 @@ export const createNotification = async (userId, message) => {
   }
 };
 
-export const sendNotification = async (io, userId,socketId, content) => {
+export const sendNotification = async (io, content) => {
   try {
-    const notification = await Notification.create({ userId, content });
+    const notification = await Notification.create({ content });
 
-    const userSocket = io.sockets.sockets.get(socketId);
-    if (userSocket) {
-      userSocket.emit("notification", notification);
-    }
+    io.emit("notification",notification)
+    // const userSocket = io.sockets.sockets.get(socketId);
+    // if (userSocket) {
+    //   userSocket.emit("notification", notification);
+    // }
   } catch (error) {
     console.error("Error sending notification:", error);
   }
