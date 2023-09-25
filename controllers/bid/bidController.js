@@ -54,7 +54,7 @@ export const getAllAuctions = (catchAsyncError(async(req, res, next) => {
   let limit = parseInt(req.query.perPage) || 10;
   let page = req.query.page ? req.query.page : 1;
   let skip = (page - 1) * (req.query.perPage ? req.query.perPage : 10);
-  let sort = req.query.sort ? {} : { createdAt: -1 };
+  let sort = req.query.sort ? JSON.parse(req.query.sort)  : { createdAt: -1 };
   let search = req.query.search;
   let status = req.query.status == 'false' ? false : true
 
