@@ -97,6 +97,9 @@ app.use("/api/user/", userPrimaryRoutes);
 import farmerRoutes from "./routes/farmer/primaryRoute.js";
 app.use("/api/farmer/", farmerRoutes);
 
+// Vendor route imports
+import vendorRoutes from "./routes/vendor/primaryRoute.js";
+app.use("/api/vendor",vendorRoutes);
 // Bid Route
 import bidRoutes from "./routes/bid/bidRoute.js";
 app.use("/api/bid/", bidRoutes);
