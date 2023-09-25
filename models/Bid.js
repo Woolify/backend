@@ -4,7 +4,7 @@ const schema = new mongoose.Schema(
     {
         bidder: {
           type: Schema.Types.ObjectId,
-          ref: "vendor",
+          ref: "user",
           required: true,
         },
         auction:{
