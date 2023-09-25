@@ -14,6 +14,9 @@ const schema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  for:{
+    type:String,
+  }
 },
 { timestamps: true }
 );
