@@ -163,7 +163,6 @@ export const getAnimalsData = catchAsyncError(async (req, res, next) => {
       },
     ];
   }
-
   let aggregateQuery = [
     {
       $match: query,
@@ -202,22 +201,36 @@ export const getAnimalsData = catchAsyncError(async (req, res, next) => {
     {
       $unwind: "$metadata",
     },
+    {
+      $group: {
+        _id: null,
+        animals: { $first: "$animals" },
+        AnimalsData: { $first: "$AnimalsData" },
+        total: { $first: "$metadata.total" },
+        animalsCount: { $sum: 1 },
+        animalsSavedAsDraftCount: {
+          $sum: { $cond: [{ $eq: ["$saveAsDraft", true] }, 1, 0] },
+        },
+      },
+    },
   ];
-
+  
   const animals = await Animal.aggregate(aggregateQuery);
-
-  if(animals.length != 0){
+  
+  if (animals.length != 0) {
     res.status(200).json({
       animals: animals[0].animals,
-      AnimalsData: animals[0]?.AnimalsData,
-      total: animals[0].metadata ? Math.ceil(animals[0].metadata.total / limit) : 0,
+      AnimalsData: animals[0]?.AnimalsData[0],
+      animalsCount: animals[0]?.animals.length,
+      total: animals[0].total ? Math.ceil(animals[0].total / limit) : 0,
       page,
       perPage: limit,
       search: search ? search : "",
     });
   } else {
-    res.status(200).json(animals)
+    res.status(200).json(animals);
   }
+  
 
 });
 
