@@ -220,7 +220,7 @@ export const getAnimalsData = catchAsyncError(async (req, res, next) => {
   if (animals.length != 0) {
     res.status(200).json({
       animals: animals[0].animals,
-      AnimalsData: animals[0]?.AnimalsData[0],
+      AnimalsData: animals[0]?.AnimalsData,
       animalsCount: animals[0]?.animals.length,
       total: animals[0].total ? Math.ceil(animals[0].total / limit) : 0,
       page,
