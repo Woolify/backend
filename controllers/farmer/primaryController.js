@@ -5,6 +5,7 @@ import {Animal} from "../../models/Animal.js";
 import {Farmer} from "../../models/Farmer.js";
 import PDFDocument from "pdfkit"
 import { Inventory } from "../../models/Inventory.js";
+import { Auction } from "../../models/Auction.js";
 
 
 const addAnimal = async(owner,name) => {
@@ -355,4 +356,137 @@ export const deleteInventory = catchAsyncError( async(req,res,next) => {
   inventory.save();
 
   res.status(200).json({message:"inventory deleted successfully."})
+})
+
+export const getFarmersBids = catchAsyncError(async (req,res,next) => {
+  let query = {
+    initializer: req.user._id,
+    status : req.query.status == 'true' ? true : false,
+    // deleted: false,
+  };
+
+  let limit = parseInt(req.query.perPage) || 10;
+  let page = req.query.page ? req.query.page : 1;
+  let skip = (page - 1) * (req.query.perPage ? req.query.perPage : 10);
+  let sort = req.query.sort ? {} : { createdAt: -1 };
+  let search = req.query.search;
+
+  if (search) {
+    let newSearchQuery = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const regex = new RegExp(newSearchQuery, "gi");
+    query.$or = [
+      {
+        bid: regex,
+      },
+    ];
+  }
+
+  let aggregateQuery = [
+    {
+      $match: query,
+    },
+    {
+      $sort: sort,
+    },
+    {
+      $lookup: {
+        from: 'inventories',
+        localField: 'inventory',
+        foreignField: '_id',
+        as: 'inventory',
+      },
+    },
+    {
+      $unwind: '$inventory',
+    },
+    {
+      $lookup: {
+        from: 'bids',
+        localField: '_id',
+        foreignField: 'auction',
+        as: 'bids',
+      },
+    },
+    {
+      $unwind: {
+        path: '$bids',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'bids.bidder',
+        foreignField: '_id',
+        as: 'bids.bidder',
+      },
+    },
+    {
+      $unwind: {
+        path: '$bids.bidder',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $group: {
+        _id: '$_id',
+        bids: {
+          $push: '$bids',
+        },
+        highestBid: {
+          $max: '$bids.offeredPrice',
+        },
+        otherFields: {
+          $first: '$$ROOT',
+        },
+      },
+    },
+    {
+      $addFields: {
+        highestBidDocument: {
+          $filter: {
+            input: '$bids',
+            as: 'bid',
+            cond: { $eq: ['$$bid.offeredPrice', '$highestBid'] },
+          },
+        },
+      },
+    },
+    {
+      $replaceRoot: {
+        newRoot: {
+          $mergeObjects: ['$otherFields', { bids: '$bids', highestBidDocument: { $arrayElemAt: ['$highestBidDocument', 0] } }],
+        },
+      },
+    },
+    {
+      $facet: {
+        data: [
+          {
+            $skip: skip,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        metadata: [
+          {
+            $count: "total",
+          },
+        ],
+      },
+    },
+  ];
+  
+  const auctions = await Auction.aggregate(aggregateQuery);
+  
+  res.status(200).json({
+    auctions: auctions[0].data,
+    total: auctions[0].metadata[0]
+      ? Math.ceil(auctions[0].metadata[0].total / limit)
+      : 0,
+    page,
+    perPage: limit,
+    search: search ? search : "",
+  });
 })
