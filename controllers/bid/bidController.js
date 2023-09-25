@@ -23,7 +23,10 @@ export const getSingleAuction = (catchAsyncError(async(req,res,next) => {
         select: '-_id firstName lastName email phone isVerified ' 
       },
       {
-        path:'bids'
+        path:'bids',
+        populate:{
+          path:'bidder'
+        }
       }
     ]);
     // const auction = await Auction.findById(id).populate(['inventory','bids']);
