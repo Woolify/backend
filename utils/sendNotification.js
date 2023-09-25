@@ -13,9 +13,9 @@ export const createNotification = async (userId, message) => {
   }
 };
 
-export const sendNotification = async (io, content) => {
+export const sendNotification = async (io, content, forUser ) => {
   try {
-    const notification = await Notification.create({ content });
+    const notification = await Notification.create({ content, for:forUser });
 
     io.emit("notification",notification)
     // const userSocket = io.sockets.sockets.get(socketId);
