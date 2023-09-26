@@ -9,6 +9,9 @@ export const getAuctionByVendor = catchAsyncError(async (req, res, next) => {
         path: 'bids',
         populate: 'bidder',
       },
+      {
+        path:'inventory'
+      }
     ]);
   
     const filteredAuctions = auctions.filter((auction) => {
