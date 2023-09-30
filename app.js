@@ -110,6 +110,10 @@ app.get("/test", (req,res)=>{
   // res.status(200).send("Server is up & running...")
 })
 
+// ivrs routes
+import ivrsRoutes from './routes/ivrs/index.js';
+app.use('/api/ivrs',ivrsRoutes);
+
 // fallback route
 app.get("*", (req, res) => {
   const responseType = req.accepts(["html", "json"]);
